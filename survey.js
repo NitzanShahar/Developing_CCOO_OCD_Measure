@@ -19,7 +19,10 @@ DOMAINS.forEach(domain => {
   const size = domain.itemsPerScreen;
   const screenCount = Math.ceil(domain.items.length / size);
   for (let n = 0; n < screenCount; n++) {
-    steps.push({ type: "itemGroup", domain, items: domain.items.slice(n * size, (n + 1) * size), n, screenCount });
+    const items = domain.items.slice(n * size, (n + 1) * size);
+    steps.push(size === 1
+      ? { type: "item", domain, item: items[0], n, screenCount }
+      : { type: "itemGroup", domain, items, n, screenCount });
   }
   steps.push({ type: "followupIntro", domain });
   domain.followup.forEach((q, n) => steps.push({ type: "question", domain, q, n }));
@@ -96,6 +99,30 @@ const screens = {
         backButton(),
         el("button", { class: "primary", onclick: () => go(1) }, ["Continue ", icon("arrow-right")])
       ])
+    ]);
+  },
+
+  item({ domain, item, n, screenCount }) {
+    const prev = data.screener[item.id];
+    const options = domain.screenerOptions.map((label, idx) =>
+      el("button", {
+        class: "option" + (prev && prev.response === idx ? " selected" : ""),
+        onclick: e => {
+          data.screener[item.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
+          app.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
+          e.currentTarget.classList.add("selected");
+          advanceTimer = setTimeout(() => go(1), 250);
+        }
+      }, label));
+    return el("section", { class: "card" }, [
+      progressBar(n, screenCount),
+      el("p", { class: "meta", text: `${n + 1} of ${screenCount}` }),
+      el("div", { class: "center" }, [
+        el("p", { class: "prompt", text: domain.screenerPrompt }),
+        el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })]),
+        el("div", { class: "options" }, options)
+      ]),
+      backButton()
     ]);
   },
 
@@ -177,8 +204,10 @@ const screens = {
       progressBar(n, domain.followup.length),
       el("p", { class: "meta", text: `${n + 1} of ${domain.followup.length}` }),
       reminder(domain),
-      el("p", { class: "question", text: q.text }),
-      el("div", { class: "options" }, options),
+      el("div", { class: "center" }, [
+        el("p", { class: "question", text: q.text }),
+        el("div", { class: "options" }, options)
+      ]),
       backButton()
     ]);
   },
@@ -199,11 +228,26 @@ const screens = {
   }
 };
 
+// Keep the frame a fixed size and never scroll: if this screen's content is
+// taller than the card, shrink the card's text scale step by step until it fits.
+function fitToCard() {
+  const card = app.querySelector(".card");
+  if (!card) return;
+  let s = 1;
+  card.style.setProperty("--s", s);
+  while (card.scrollHeight > card.clientHeight + 1 && s > 0.6) {
+    s = Math.round((s - 0.04) * 100) / 100;
+    card.style.setProperty("--s", s);
+  }
+}
+window.addEventListener("resize", fitToCard);
+app.addEventListener("toggle", fitToCard, true);
+
 function render() {
   const step = steps[current];
   app.replaceChildren(screens[step.type](step));
   shownAt = performance.now();
-  window.scrollTo(0, 0);
+  fitToCard();
   const focusTarget = app.querySelector("h1, .prompt, .question, .eyebrow");
   if (focusTarget) { focusTarget.setAttribute("tabindex", "-1"); focusTarget.focus({ preventScroll: true }); }
 }
