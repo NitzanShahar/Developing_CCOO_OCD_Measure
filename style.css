@@ -55,10 +55,10 @@ main {
   border-radius: 20px;
   /* --s is lowered by survey.js only if a screen's content would not fit. */
   font-size: calc(var(--base) * var(--s, 1));
-  padding: 2.6em 3em;
+  padding: 2.2em 3em;
   display: flex;
   flex-direction: column;
-  gap: 1.1em;
+  gap: 1em;
 }
 
 h1 { font-size: 1.55em; font-weight: 600; line-height: 1.3; margin: 0; }
@@ -90,8 +90,22 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .card > .link-btn { margin-top: auto; }
 .row-between { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
 
-.progress { height: .4em; flex-shrink: 0; background: var(--bg); border-radius: .2em; overflow: hidden; }
+.progress-row { display: flex; align-items: center; gap: 1em; flex-shrink: 0; }
+.progress-row .meta { white-space: nowrap; }
+.progress { flex: 1; height: .4em; background: var(--bg); border-radius: .2em; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--accent); transition: width .25s ease; }
+
+/* Part indicator: "Part 2 of 4 · Cleaning" plus numbered steps */
+.parts { display: flex; justify-content: space-between; align-items: center; gap: 1em; flex-shrink: 0; }
+.parts-label { font-size: .85em; color: var(--text-2); }
+.parts-label strong { color: var(--accent); font-weight: 600; }
+.parts-steps { display: flex; gap: .45em; flex-shrink: 0; }
+.parts-steps span { width: 1.8em; height: 1.8em; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .78em; font-weight: 600; border: 1.5px solid var(--border); color: var(--text-2); }
+.parts-steps span.done { background: var(--accent-bg); border-color: var(--accent-bg); color: var(--accent-text); }
+.parts-steps span.current { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.parts-steps .ti { font-size: 1.1em; }
+.parts-note { display: flex; align-items: center; gap: 1em; background: var(--bg); border-radius: .6em; padding: .8em 1em; }
+.parts-note p { font-size: .9em; }
 
 /* Question block sits in the vertical middle of the frame */
 .center { margin: auto 0; display: flex; flex-direction: column; gap: 1.1em; }
@@ -110,9 +124,18 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .endorsed-list .ti { font-size: 1.3em; flex-shrink: 0; }
 .freq-tag { margin-left: auto; font-size: .85em; font-weight: 600; white-space: nowrap; padding-left: .6em; }
 
-.reminder { border: 1px solid var(--border); border-radius: .6em; padding: .6em .9em; font-size: .85em; color: var(--text-2); }
-.reminder summary { cursor: pointer; }
-.reminder ul { margin: .5em 0 0; padding-left: 1.2em; }
+/* Always-visible reminder of the endorsed behaviors on each follow-up question */
+.reminder { display: flex; flex-direction: column; gap: .5em; }
+.reminder-title { font-size: .85em; font-weight: 600; color: var(--text-2); }
+.reminder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45em; }
+.followup-layout { flex: 1 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 2em; align-items: center; }
+.followup-layout .reminder-list li { font-size: .82em; padding: .4em .7em; }
+.followup-layout .center { margin: 0; }
+.followup-layout.many { display: flex; flex-direction: column; align-items: stretch; gap: 1em; }
+.followup-layout.many .reminder-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35em .6em; }
+.followup-layout.many .reminder-list li { padding: .3em .7em; }
+.reminder-list li { display: flex; gap: .6em; align-items: center; background: var(--accent-bg); color: var(--accent-text); border-radius: .5em; padding: .5em .8em; font-size: .9em; line-height: 1.35; }
+.reminder-list .ti { font-size: 1.35em; flex-shrink: 0; }
 
 /* Multi-item grid mode (itemsPerScreen > 1) */
 .rate-row { border-top: 1px solid var(--border); padding-top: 1em; display: flex; flex-direction: column; gap: .6em; }
@@ -130,5 +153,8 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
   .card { padding: 1.4em 1.1em; border-radius: 16px; height: min(720px, 100%); }
   .primary { min-width: 7em; }
   .options { gap: .4em; }
+  .followup-layout { display: flex; flex-direction: column; align-items: stretch; gap: 1em; }
+  .followup-layout.many .reminder-list { grid-template-columns: 1fr; }
+  .parts-steps span { width: 1.6em; height: 1.6em; }
   .option { font-size: .82em; padding: .9em .2em; }
 }

@@ -65,20 +65,45 @@ function icon(name, cls = "") {
   return el("i", { class: `ti ti-${name} ${cls}`, "aria-hidden": "true" });
 }
 
-function progressBar(done, total) {
+// Progress within the current part: thin bar with "3 of 12" on the same row.
+function progressBar(done, total, label = `${done + 1} of ${total}`) {
   const pct = Math.round((done / total) * 100);
-  return el("div", { class: "progress", role: "progressbar", "aria-valuenow": pct, "aria-valuemin": 0, "aria-valuemax": 100 },
-    el("div", { class: "progress-fill", style: `width:${pct}%` }));
+  return el("div", { class: "progress-row" }, [
+    el("div", { class: "progress", role: "progressbar", "aria-valuenow": pct, "aria-valuemin": 0, "aria-valuemax": 100 },
+      el("div", { class: "progress-fill", style: `width:${pct}%` })),
+    el("span", { class: "meta", text: label })
+  ]);
 }
 
 function backButton() {
   return el("button", { class: "link-btn", onclick: () => go(-1) }, [icon("arrow-left"), " Back"]);
 }
 
+// Numbered part markers 1..TOTAL_PARTS. Only the current part's title is shown;
+// upcoming parts are numbers only.
+function partSteps(currentIndex) {
+  return el("div", { class: "parts-steps", "aria-hidden": "true" },
+    Array.from({ length: TOTAL_PARTS }, (_, i) =>
+      el("span", { class: i < currentIndex ? "done" : i === currentIndex ? "current" : "" },
+        i < currentIndex ? icon("check") : String(i + 1))));
+}
+
+function partHeader(domain) {
+  const i = DOMAINS.indexOf(domain);
+  return el("div", { class: "parts" }, [
+    el("p", { class: "parts-label" }, [
+      `Part ${i + 1} of ${TOTAL_PARTS} · `,
+      el("strong", { text: domain.title })
+    ]),
+    partSteps(i)
+  ]);
+}
+
 function reminder(domain) {
-  return el("details", { class: "reminder" }, [
-    el("summary", { text: `Your ${domain.title.toLowerCase()} behaviors (${endorsed(domain).length})` }),
-    el("ul", {}, endorsed(domain).map(it => el("li", { text: it.text })))
+  return el("div", { class: "reminder" }, [
+    el("p", { class: "reminder-title", text: domain.reminderTitle }),
+    el("ul", { class: "reminder-list" }, endorsed(domain).map(it =>
+      el("li", {}, [icon(it.icon), el("span", { text: it.text })])))
   ]);
 }
 
@@ -87,13 +112,14 @@ const screens = {
     return el("section", { class: "card" }, [
       el("h1", { text: WELCOME.title }),
       ...WELCOME.text.map(t => el("p", { text: t })),
+      el("div", { class: "parts-note" }, [partSteps(-1), el("p", { text: WELCOME.partsNote })]),
       el("button", { class: "primary", onclick: () => go(1) }, ["Start ", icon("arrow-right")])
     ]);
   },
 
   intro({ domain }) {
     return el("section", { class: "card" }, [
-      el("p", { class: "eyebrow", text: domain.title }),
+      el("h1", { text: domain.title }),
       ...domain.intro.map(t => el("p", { text: t })),
       el("div", { class: "row-between" }, [
         backButton(),
@@ -116,7 +142,6 @@ const screens = {
       }, label));
     return el("section", { class: "card" }, [
       progressBar(n, screenCount),
-      el("p", { class: "meta", text: `${n + 1} of ${screenCount}` }),
       el("div", { class: "center" }, [
         el("p", { class: "prompt", text: domain.screenerPrompt }),
         el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })]),
@@ -161,8 +186,7 @@ const screens = {
       go(1);
     };
     return el("section", { class: "card" }, [
-      progressBar(n, screenCount),
-      el("p", { class: "meta", text: `Screen ${n + 1} of ${screenCount}` }),
+      progressBar(n, screenCount, `Screen ${n + 1} of ${screenCount}`),
       el("p", { class: "question", text: domain.screenerPrompt }),
       ...rows,
       error,
@@ -175,8 +199,7 @@ const screens = {
 
   followupIntro({ domain }) {
     return el("section", { class: "card" }, [
-      el("p", { class: "eyebrow", text: domain.title }),
-      el("p", { text: "You said you repeat or double-check the following:" }),
+      el("p", { text: domain.endorsedIntro }),
       el("ul", { class: "endorsed-list" }, endorsed(domain).map(it => el("li", {}, [
         icon(it.icon), el("span", { text: it.text }), el("span", { class: "freq-tag", text: data.screener[it.id].label })
       ]))),
@@ -202,11 +225,14 @@ const screens = {
       }, label));
     return el("section", { class: "card" }, [
       progressBar(n, domain.followup.length),
-      el("p", { class: "meta", text: `${n + 1} of ${domain.followup.length}` }),
-      reminder(domain),
-      el("div", { class: "center" }, [
-        el("p", { class: "question", text: q.text }),
-        el("div", { class: "options" }, options)
+      // Wide screens: reminder on the left, question and scale on the right.
+      // With many endorsed behaviors the list goes above, in two columns.
+      el("div", { class: "followup-layout" + (endorsed(domain).length > 6 ? " many" : "") }, [
+        reminder(domain),
+        el("div", { class: "center" }, [
+          el("p", { class: "question", text: q.text }),
+          el("div", { class: "options" }, options)
+        ])
       ]),
       backButton()
     ]);
@@ -230,12 +256,24 @@ const screens = {
 
 // Keep the frame a fixed size and never scroll: if this screen's content is
 // taller than the card, shrink the card's text scale step by step until it fits.
+// The reminder list shrinks first (down to 80%), so the question and answer
+// buttons keep their full size; only then does the whole card scale down.
 function fitToCard() {
   const card = app.querySelector(".card");
   if (!card) return;
+  const overflows = () => card.scrollHeight > card.clientHeight + 1;
+  const list = card.querySelector(".reminder, .endorsed-list");
   let s = 1;
   card.style.setProperty("--s", s);
-  while (card.scrollHeight > card.clientHeight + 1 && s > 0.6) {
+  if (list) {
+    let r = 1;
+    list.style.fontSize = "";
+    while (overflows() && r > 0.8) {
+      r = Math.round((r - 0.04) * 100) / 100;
+      list.style.fontSize = `${r}em`;
+    }
+  }
+  while (overflows() && s > 0.6) {
     s = Math.round((s - 0.04) * 100) / 100;
     card.style.setProperty("--s", s);
   }
@@ -245,7 +283,9 @@ app.addEventListener("toggle", fitToCard, true);
 
 function render() {
   const step = steps[current];
-  app.replaceChildren(screens[step.type](step));
+  const card = screens[step.type](step);
+  if (step.domain) card.prepend(partHeader(step.domain));
+  app.replaceChildren(card);
   shownAt = performance.now();
   fitToCard();
   const focusTarget = app.querySelector("h1, .prompt, .question, .eyebrow");
