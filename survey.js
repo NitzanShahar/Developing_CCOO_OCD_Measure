@@ -103,7 +103,7 @@ function reminder(domain) {
   return el("div", { class: "reminder" }, [
     el("p", { class: "reminder-title", text: domain.reminderTitle }),
     el("ul", { class: "reminder-list" }, endorsed(domain).map(it =>
-      el("li", {}, [icon(it.icon), el("span", { text: it.text })])))
+      el("li", {}, [icon(it.icon), el("span", { text: it.short || it.text })])))
   ]);
 }
 
@@ -112,7 +112,6 @@ const screens = {
     return el("section", { class: "card" }, [
       el("h1", { text: WELCOME.title }),
       ...WELCOME.text.map(t => el("p", { text: t })),
-      el("div", { class: "parts-note" }, [partSteps(-1), el("p", { text: WELCOME.partsNote })]),
       el("button", { class: "primary", onclick: () => go(1) }, ["Start ", icon("arrow-right")])
     ]);
   },
@@ -225,9 +224,8 @@ const screens = {
       }, label));
     return el("section", { class: "card" }, [
       progressBar(n, domain.followup.length),
-      // Wide screens: reminder on the left, question and scale on the right.
-      // With many endorsed behaviors the list goes above, in two columns.
-      el("div", { class: "followup-layout" + (endorsed(domain).length > 6 ? " many" : "") }, [
+      // Short-label reminder chips above the question.
+      el("div", { class: "followup-layout" }, [
         reminder(domain),
         el("div", { class: "center" }, [
           el("p", { class: "question", text: q.text }),

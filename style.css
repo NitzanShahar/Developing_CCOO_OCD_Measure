@@ -55,7 +55,7 @@ main {
   border-radius: 20px;
   /* --s is lowered by survey.js only if a screen's content would not fit. */
   font-size: calc(var(--base) * var(--s, 1));
-  padding: 2.2em 3em;
+  padding: 1.9em 3em;
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -86,7 +86,7 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; min-width: 9em; }
 .card > .primary { align-self: flex-end; margin-top: auto; }
 .secondary { align-self: flex-start; margin-top: auto; }
-.link-btn { border: none; padding: .6em 0; color: var(--text-2); font-size: .9em; align-self: flex-start; }
+.link-btn { border: none; padding: .3em 0; color: var(--text-2); font-size: .9em; align-self: flex-start; }
 .card > .link-btn { margin-top: auto; }
 .row-between { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
 
@@ -104,8 +104,6 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .parts-steps span.done { background: var(--accent-bg); border-color: var(--accent-bg); color: var(--accent-text); }
 .parts-steps span.current { background: var(--accent); border-color: var(--accent); color: var(--surface); }
 .parts-steps .ti { font-size: 1.1em; }
-.parts-note { display: flex; align-items: center; gap: 1em; background: var(--bg); border-radius: .6em; padding: .8em 1em; }
-.parts-note p { font-size: .9em; }
 
 /* Question block sits in the vertical middle of the frame */
 .center { margin: auto 0; display: flex; flex-direction: column; gap: 1.1em; }
@@ -115,7 +113,7 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 
 /* Likert scale: left to right, equal-width boxes */
 .options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7em; margin-top: .6em; }
-.option { text-align: center; padding: 1.1em .4em; font-size: 1em; line-height: 1.3; min-height: 4.2em; display: flex; align-items: center; justify-content: center; }
+.option { text-align: center; padding: .9em .4em; font-size: 1em; line-height: 1.3; min-height: 3.6em; display: flex; align-items: center; justify-content: center; }
 .option:hover, .chip:hover { border-color: var(--accent); }
 .option.selected, .chip.selected { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
 
@@ -127,14 +125,10 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 /* Always-visible reminder of the endorsed behaviors on each follow-up question */
 .reminder { display: flex; flex-direction: column; gap: .5em; }
 .reminder-title { font-size: .85em; font-weight: 600; color: var(--text-2); }
-.reminder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45em; }
-.followup-layout { flex: 1 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 2em; align-items: center; }
-.followup-layout .reminder-list li { font-size: .82em; padding: .4em .7em; }
+.reminder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4em; }
+.followup-layout { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; gap: 1.3em; }
 .followup-layout .center { margin: 0; }
-.followup-layout.many { display: flex; flex-direction: column; align-items: stretch; gap: 1em; }
-.followup-layout.many .reminder-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35em .6em; }
-.followup-layout.many .reminder-list li { padding: .3em .7em; }
-.reminder-list li { display: flex; gap: .6em; align-items: center; background: var(--accent-bg); color: var(--accent-text); border-radius: .5em; padding: .5em .8em; font-size: .9em; line-height: 1.35; }
+.reminder-list li { display: flex; gap: .4em; align-items: center; background: var(--accent-bg); color: var(--accent-text); border-radius: .5em; padding: .4em .65em; font-size: .9em; line-height: 1.35; }
 .reminder-list .ti { font-size: 1.35em; flex-shrink: 0; }
 
 /* Multi-item grid mode (itemsPerScreen > 1) */
@@ -153,8 +147,8 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
   .card { padding: 1.4em 1.1em; border-radius: 16px; height: min(720px, 100%); }
   .primary { min-width: 7em; }
   .options { gap: .4em; }
-  .followup-layout { display: flex; flex-direction: column; align-items: stretch; gap: 1em; }
-  .followup-layout.many .reminder-list { grid-template-columns: 1fr; }
+  .followup-layout { gap: 1.1em; }
+  .reminder-list { gap: .35em; }
   .parts-steps span { width: 1.6em; height: 1.6em; }
   .option { font-size: .82em; padding: .9em .2em; }
 }
