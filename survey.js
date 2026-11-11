@@ -1,11 +1,12 @@
-// Survey flow: welcome -> per domain [intro -> one card per item -> (if any "yes") reminder + follow-up questions] -> end.
+// Survey flow: welcome -> per domain [intro -> screens of items rated on a frequency scale
+// -> (if any item at/above threshold) reminder + follow-up questions] -> end.
 
 const app = document.getElementById("app");
 
 const data = {
   started_at: new Date().toISOString(),
   user_agent: navigator.userAgent,
-  screener: {},   // item id -> { response: 1 | 0, rt_ms }
+  screener: {},   // item id -> { response: index into screenerOptions, label, rt_ms (since screen shown) }
   followup: {},   // question id -> { response: index 0-3, label, rt_ms }
   finished_at: null
 };
@@ -15,7 +16,11 @@ const data = {
 const steps = [{ type: "welcome" }];
 DOMAINS.forEach(domain => {
   steps.push({ type: "intro", domain });
-  domain.items.forEach((item, n) => steps.push({ type: "item", domain, item, n }));
+  const size = domain.itemsPerScreen;
+  const screenCount = Math.ceil(domain.items.length / size);
+  for (let n = 0; n < screenCount; n++) {
+    steps.push({ type: "itemGroup", domain, items: domain.items.slice(n * size, (n + 1) * size), n, screenCount });
+  }
   steps.push({ type: "followupIntro", domain });
   domain.followup.forEach((q, n) => steps.push({ type: "question", domain, q, n }));
 });
@@ -26,7 +31,7 @@ let shownAt = 0;
 let advanceTimer = null;
 
 function endorsed(domain) {
-  return domain.items.filter(it => data.screener[it.id] && data.screener[it.id].response === 1);
+  return domain.items.filter(it => data.screener[it.id] && data.screener[it.id].response >= domain.endorseThreshold);
 }
 
 function isSkipped(step) {
@@ -94,33 +99,60 @@ const screens = {
     ]);
   },
 
-  item({ domain, item, n }) {
-    const prev = data.screener[item.id];
-    const answer = response => {
-      data.screener[item.id] = { response, rt_ms: Math.round(performance.now() - shownAt) };
+  itemGroup({ domain, items, n, screenCount }) {
+    const error = el("p", { class: "error", role: "alert" });
+    const rows = items.map(item => {
+      const chips = domain.screenerOptions.map((label, idx) => {
+        const prev = data.screener[item.id];
+        return el("button", {
+          class: "chip" + (prev && prev.response === idx ? " selected" : ""),
+          "aria-pressed": prev && prev.response === idx ? "true" : "false",
+          onclick: e => {
+            data.screener[item.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
+            e.currentTarget.parentNode.querySelectorAll(".chip").forEach(b => {
+              b.classList.remove("selected"); b.setAttribute("aria-pressed", "false");
+            });
+            e.currentTarget.classList.add("selected");
+            e.currentTarget.setAttribute("aria-pressed", "true");
+            e.currentTarget.closest(".rate-row").classList.remove("missing");
+            if (items.every(it => data.screener[it.id])) error.textContent = "";
+          }
+        }, label);
+      });
+      return el("div", { class: "rate-row", "data-id": item.id }, [
+        el("div", { class: "rate-label" }, [icon(item.icon), el("span", { text: item.text })]),
+        el("div", { class: "chips", role: "group", "aria-label": item.text }, chips)
+      ]);
+    });
+    const next = () => {
+      const missing = items.filter(it => !data.screener[it.id]);
+      if (missing.length) {
+        missing.forEach(it => app.querySelector(`[data-id="${it.id}"]`).classList.add("missing"));
+        error.textContent = "Rate every item to continue";
+        return;
+      }
       go(1);
     };
-    return el("section", { class: "card item-card" }, [
-      progressBar(n, domain.items.length),
-      el("p", { class: "meta", text: `${n + 1} of ${domain.items.length}` }),
-      el("p", { class: "prompt", text: domain.screenerCardPrompt }),
-      el("div", { class: "item-body" }, [
-        icon(item.icon, "item-icon"),
-        el("p", { class: "item-text", text: item.text })
-      ]),
-      el("div", { class: "yn" }, [
-        el("button", { class: "choice" + (prev && prev.response === 0 ? " selected" : ""), onclick: () => answer(0) }, "No"),
-        el("button", { class: "choice" + (prev && prev.response === 1 ? " selected" : ""), onclick: () => answer(1) }, "Yes")
-      ]),
-      backButton()
+    return el("section", { class: "card" }, [
+      progressBar(n, screenCount),
+      el("p", { class: "meta", text: `Screen ${n + 1} of ${screenCount}` }),
+      el("p", { class: "question", text: domain.screenerPrompt }),
+      ...rows,
+      error,
+      el("div", { class: "row-between" }, [
+        backButton(),
+        el("button", { class: "primary", onclick: next }, [n === screenCount - 1 ? "Continue " : "Next ", icon("arrow-right")])
+      ])
     ]);
   },
 
   followupIntro({ domain }) {
     return el("section", { class: "card" }, [
       el("p", { class: "eyebrow", text: domain.title }),
-      el("p", { text: "You said you frequently repeat or double-check the following:" }),
-      el("ul", { class: "endorsed-list" }, endorsed(domain).map(it => el("li", {}, [icon(it.icon), el("span", { text: it.text })]))),
+      el("p", { text: "You said you repeat or double-check the following:" }),
+      el("ul", { class: "endorsed-list" }, endorsed(domain).map(it => el("li", {}, [
+        icon(it.icon), el("span", { text: it.text }), el("span", { class: "freq-tag", text: data.screener[it.id].label })
+      ]))),
       el("p", { class: "strong", text: domain.followupIntro }),
       el("div", { class: "row-between" }, [
         backButton(),

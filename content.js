@@ -19,8 +19,12 @@ const DOMAINS = [
       "Checking behavior means making sure more than once that something is safe, correct, or in order. At times, people may check the same thing again or return to it to make sure everything is as it should be.",
       "Common examples are checking that doors or windows are locked, that stoves or heaters are off, or that no accident has occurred."
     ],
-    screenerPrompt: "Which of the following actions do you frequently repeat or double-check?",
-    screenerCardPrompt: "Do you frequently repeat or double-check this?",
+    screenerPrompt: "How often do you repeat or double-check each of the following?",
+    screenerOptions: ["Never", "Rarely", "Sometimes", "Often"],
+    // Items rated at or above this option index count as "endorsed" and
+    // trigger the follow-up questions (2 = "Sometimes").
+    endorseThreshold: 2,
+    itemsPerScreen: 4,
     items: [
       { id: "chk_doors",        icon: "lock",           text: "Checking that doors or windows are locked" },
       { id: "chk_appliances",   icon: "flame",          text: "Checking that the stove, oven, or appliances are off" },
