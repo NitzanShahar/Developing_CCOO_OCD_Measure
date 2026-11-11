@@ -1,5 +1,5 @@
-// Survey flow: welcome -> per domain [intro -> screens of items rated on a frequency scale
-// -> (if any item at/above threshold) reminder + follow-up questions] -> end.
+// Survey flow: welcome -> per part [explanation -> one screen per item -> (if any item at/above
+// threshold) follow-up questions with a reminder of endorsed items] -> end.
 
 const app = document.getElementById("app");
 
@@ -24,7 +24,6 @@ DOMAINS.forEach(domain => {
       ? { type: "item", domain, item: items[0], n, screenCount }
       : { type: "itemGroup", domain, items, n, screenCount });
   }
-  steps.push({ type: "followupIntro", domain });
   domain.followup.forEach((q, n) => steps.push({ type: "question", domain, q, n }));
 });
 steps.push({ type: "end" });
@@ -38,7 +37,7 @@ function endorsed(domain) {
 }
 
 function isSkipped(step) {
-  return (step.type === "followupIntro" || step.type === "question") && endorsed(step.domain).length === 0;
+  return step.type === "question" && endorsed(step.domain).length === 0;
 }
 
 function go(direction) {
@@ -99,9 +98,9 @@ function partHeader(domain) {
   ]);
 }
 
-function reminder(domain) {
+function reminder(domain, title = domain.reminderTitle) {
   return el("div", { class: "reminder" }, [
-    el("p", { class: "reminder-title", text: domain.reminderTitle }),
+    el("p", { class: "reminder-title", text: title }),
     el("ul", { class: "reminder-list" }, endorsed(domain).map(it =>
       el("li", {}, [icon(it.icon), el("span", { text: it.short || it.text })])))
   ]);
@@ -196,20 +195,6 @@ const screens = {
     ]);
   },
 
-  followupIntro({ domain }) {
-    return el("section", { class: "card" }, [
-      el("p", { text: domain.endorsedIntro }),
-      el("ul", { class: "endorsed-list" }, endorsed(domain).map(it => el("li", {}, [
-        icon(it.icon), el("span", { text: it.text }), el("span", { class: "freq-tag", text: data.screener[it.id].label })
-      ]))),
-      el("p", { class: "strong", text: domain.followupIntro }),
-      el("div", { class: "row-between" }, [
-        backButton(),
-        el("button", { class: "primary", onclick: () => go(1) }, ["Continue ", icon("arrow-right")])
-      ])
-    ]);
-  },
-
   question({ domain, q, n }) {
     const prev = data.followup[q.id];
     const options = q.options.map((label, idx) =>
@@ -224,9 +209,10 @@ const screens = {
       }, label));
     return el("section", { class: "card" }, [
       progressBar(n, domain.followup.length),
-      // Short-label reminder chips above the question.
+      // Reminder panel of endorsed items above the question. On the first
+      // follow-up its heading is the part's instruction ("Please think about...").
       el("div", { class: "followup-layout" }, [
-        reminder(domain),
+        reminder(domain, n === 0 ? domain.followupIntro : domain.reminderTitle),
         el("div", { class: "center" }, [
           el("p", { class: "question", text: q.text }),
           el("div", { class: "options" }, options)
@@ -260,7 +246,7 @@ function fitToCard() {
   const card = app.querySelector(".card");
   if (!card) return;
   const overflows = () => card.scrollHeight > card.clientHeight + 1;
-  const list = card.querySelector(".reminder, .endorsed-list");
+  const list = card.querySelector(".reminder");
   let s = 1;
   card.style.setProperty("--s", s);
   if (list) {

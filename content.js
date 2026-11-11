@@ -57,7 +57,6 @@ const DOMAINS = [
       { id: "chk_past_events",  icon: "history",        short: "Going over past events",
         text: "Going over past events in your head again and again to make sure you did not say anything you didn't mean to" }
     ],
-    endorsedIntro: "You said you repeat or double-check the following:",
     reminderTitle: "Your checking behaviors",
     followupIntro: "Please think about your own checking habits at present and answer the following questions.",
     // Frequency follow-up dropped: the item ratings already measure frequency.
@@ -98,7 +97,6 @@ const DOMAINS = [
       { id: "cln_surfaces",       icon: "sparkles",     short: "Wiping surfaces",       text: "Wiping down counters or surfaces over and over" },
       { id: "cln_objects",        icon: "bucket",       short: "Cleaning objects",      text: "Cleaning household items or objects repeatedly" }
     ],
-    endorsedIntro: "You said you do the following:",
     reminderTitle: "Your cleaning and washing behaviors",
     followupIntro: "Please think about your own cleaning and washing habits and answer the following questions.",
     // Frequency follow-up dropped, as in Checking.
@@ -151,7 +149,6 @@ const DOMAINS = [
       { id: "obs_need_to_know",   icon: "brain",         short: "Remembering details",
         text: "An intense need to know or remember minor details" }
     ],
-    endorsedIntro: "You said you experience the following:",
     reminderTitle: "Your unwanted thoughts, images, or urges",
     followupIntro: "Think about the kind of unwanted thoughts or mental images you have at present.",
     // Frequency follow-up dropped, as in Checking.
@@ -194,7 +191,6 @@ const DOMAINS = [
       { id: "ord_counting",    icon: "abacus",                 short: "Counting things",
         text: "Counting things for no reason while doing everyday tasks" }
     ],
-    endorsedIntro: "You said you do the following:",
     reminderTitle: "Your ordering behaviors",
     followupIntro: "Think about the kind of ordering that you do at present and answer the following questions.",
     // Frequency follow-up dropped, as in Checking.

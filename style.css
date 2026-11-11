@@ -117,19 +117,15 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .option:hover, .chip:hover { border-color: var(--accent); }
 .option.selected, .chip.selected { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
 
-.endorsed-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17em, 1fr)); gap: .6em; }
-.endorsed-list li { display: flex; gap: .7em; align-items: flex-start; background: var(--accent-bg); color: var(--accent-text); border-radius: .6em; padding: .6em .9em; font-size: .85em; line-height: 1.4; }
-.endorsed-list .ti { font-size: 1.3em; flex-shrink: 0; }
-.freq-tag { margin-left: auto; font-size: .85em; font-weight: 600; white-space: nowrap; padding-left: .6em; }
-
 /* Always-visible reminder of the endorsed behaviors on each follow-up question */
-.reminder { display: flex; flex-direction: column; gap: .5em; }
-.reminder-title { font-size: .85em; font-weight: 600; color: var(--text-2); }
-.reminder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4em; }
+/* A quiet panel with an evenly aligned grid: icon + label, three columns. */
+.reminder { display: flex; flex-direction: column; gap: .6em; background: var(--bg); border-radius: .7em; padding: .8em 1.1em; }
+.reminder-title { font-size: .8em; font-weight: 600; color: var(--text-2); }
+.reminder-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45em 1.4em; }
+.reminder-list li { display: flex; gap: .5em; align-items: center; font-size: .88em; line-height: 1.3; color: var(--text); }
+.reminder-list .ti { font-size: 1.25em; flex-shrink: 0; color: var(--accent); }
 .followup-layout { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; gap: 1.3em; }
 .followup-layout .center { margin: 0; }
-.reminder-list li { display: flex; gap: .4em; align-items: center; background: var(--accent-bg); color: var(--accent-text); border-radius: .5em; padding: .4em .65em; font-size: .9em; line-height: 1.35; }
-.reminder-list .ti { font-size: 1.35em; flex-shrink: 0; }
 
 /* Multi-item grid mode (itemsPerScreen > 1) */
 .rate-row { border-top: 1px solid var(--border); padding-top: 1em; display: flex; flex-direction: column; gap: .6em; }
@@ -148,7 +144,8 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
   .primary { min-width: 7em; }
   .options { gap: .4em; }
   .followup-layout { gap: 1.1em; }
-  .reminder-list { gap: .35em; }
+  .reminder { padding: .6em .8em; }
+  .reminder-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35em .8em; }
   .parts-steps span { width: 1.6em; height: 1.6em; }
   .option { font-size: .82em; padding: .9em .2em; }
 }
