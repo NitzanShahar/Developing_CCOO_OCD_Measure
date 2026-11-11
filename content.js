@@ -57,8 +57,8 @@ const DOMAINS = [
       { id: "chk_past_events",  icon: "history",        short: "Going over past events",
         text: "Going over past events in your head again and again to make sure you did not say anything you didn't mean to" }
     ],
-    reminderTitle: "Your checking behaviors",
-    followupIntro: "Please think about your own checking habits at present and answer the following questions.",
+    // Shown above the list of endorsed items, on the lead-in and every follow-up question.
+    followupLead: "Please think about the checking habits at present that you sometimes or often do:",
     // Frequency follow-up dropped: the item ratings already measure frequency.
     followup: [
       { id: "chk_distress",     label: "Distress",
@@ -97,8 +97,7 @@ const DOMAINS = [
       { id: "cln_surfaces",       icon: "sparkles",     short: "Wiping surfaces",       text: "Wiping down counters or surfaces over and over" },
       { id: "cln_objects",        icon: "bucket",       short: "Cleaning objects",      text: "Cleaning household items or objects repeatedly" }
     ],
-    reminderTitle: "Your cleaning and washing behaviors",
-    followupIntro: "Please think about your own cleaning and washing habits and answer the following questions.",
+    followupLead: "Please think about the cleaning and washing habits at present that you sometimes or often do:",
     // Frequency follow-up dropped, as in Checking.
     followup: [
       { id: "cln_distress",     label: "Distress",
@@ -149,8 +148,7 @@ const DOMAINS = [
       { id: "obs_need_to_know",   icon: "brain",         short: "Remembering details",
         text: "An intense need to know or remember minor details" }
     ],
-    reminderTitle: "Your unwanted thoughts, images, or urges",
-    followupIntro: "Think about the kind of unwanted thoughts or mental images you have at present.",
+    followupLead: "Please think about the unwanted thoughts, images, or urges at present that you sometimes or often have:",
     // Frequency follow-up dropped, as in Checking.
     followup: [
       { id: "obs_distress",     label: "Distress",
@@ -191,8 +189,7 @@ const DOMAINS = [
       { id: "ord_counting",    icon: "abacus",                 short: "Counting things",
         text: "Counting things for no reason while doing everyday tasks" }
     ],
-    reminderTitle: "Your ordering behaviors",
-    followupIntro: "Think about the kind of ordering that you do at present and answer the following questions.",
+    followupLead: "Please think about the ordering habits at present that you sometimes or often do:",
     // Frequency follow-up dropped, as in Checking.
     followup: [
       { id: "ord_distress",     label: "Distress",

@@ -108,8 +108,9 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 /* Question block sits in the vertical middle of the frame */
 .center { margin: auto 0; display: flex; flex-direction: column; gap: 1.1em; }
 .center + .link-btn { margin-top: 0; }
+.q-block { display: flex; flex-direction: column; justify-content: flex-end; gap: 1.1em; }
 .item-head { display: flex; gap: .9em; align-items: flex-start; padding: .3em 0; }
-.item-icon { font-size: 1.8em; color: var(--accent); flex-shrink: 0; line-height: 1.2; }
+.item-icon { font-size: 1.6em; color: var(--accent); flex-shrink: 0; line-height: 1; margin-top: .05em; }
 
 /* Likert scale: left to right, equal-width boxes */
 .options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7em; margin-top: .6em; }
@@ -120,7 +121,9 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 /* Always-visible reminder of the endorsed behaviors on each follow-up question */
 /* A quiet panel with an evenly aligned grid: icon + label, three columns. */
 .reminder { display: flex; flex-direction: column; gap: .6em; background: var(--bg); border-radius: .7em; padding: .8em 1.1em; }
-.reminder-title { font-size: .8em; font-weight: 600; color: var(--text-2); }
+.context { display: flex; flex-direction: column; gap: .6em; }
+.context-lead { font-size: 1em; font-weight: 500; line-height: 1.45; }
+.ghost { visibility: hidden; }
 .reminder-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45em 1.4em; }
 .reminder-list li { display: flex; gap: .5em; align-items: center; font-size: .88em; line-height: 1.3; color: var(--text); }
 .reminder-list .ti { font-size: 1.25em; flex-shrink: 0; color: var(--accent); }

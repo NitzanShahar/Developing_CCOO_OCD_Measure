@@ -24,6 +24,7 @@ DOMAINS.forEach(domain => {
       ? { type: "item", domain, item: items[0], n, screenCount }
       : { type: "itemGroup", domain, items, n, screenCount });
   }
+  steps.push({ type: "followupIntro", domain });
   domain.followup.forEach((q, n) => steps.push({ type: "question", domain, q, n }));
 });
 steps.push({ type: "end" });
@@ -37,7 +38,7 @@ function endorsed(domain) {
 }
 
 function isSkipped(step) {
-  return step.type === "question" && endorsed(step.domain).length === 0;
+  return (step.type === "followupIntro" || step.type === "question") && endorsed(step.domain).length === 0;
 }
 
 function go(direction) {
@@ -98,11 +99,48 @@ function partHeader(domain) {
   ]);
 }
 
-function reminder(domain, title = domain.reminderTitle) {
-  return el("div", { class: "reminder" }, [
-    el("p", { class: "reminder-title", text: title }),
-    el("ul", { class: "reminder-list" }, endorsed(domain).map(it =>
-      el("li", {}, [icon(it.icon), el("span", { text: it.short || it.text })])))
+// Lead sentence + panel listing the behaviors the person endorsed (short labels).
+function context(domain) {
+  return el("div", { class: "context" }, [
+    el("p", { class: "context-lead", text: domain.followupLead }),
+    el("div", { class: "reminder" }, [
+      el("ul", { class: "reminder-list" }, endorsed(domain).map(it =>
+        el("li", {}, [icon(it.icon), el("span", { text: it.short || it.text })])))
+    ])
+  ]);
+}
+
+// One layout for the lead-in (n = -1) and every follow-up question, so nothing
+// moves between them. On the lead-in the progress row, question and answers
+// are present but invisible, and Next is shown; on questions Next is invisible.
+function followupScreen(domain, q, n) {
+  const isIntro = n < 0;
+  const prev = data.followup[q.id];
+  const options = q.options.map((label, idx) =>
+    el("button", {
+      class: "option" + (!isIntro && prev && prev.response === idx ? " selected" : ""),
+      onclick: e => {
+        data.followup[q.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
+        app.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
+        e.currentTarget.classList.add("selected");
+        advanceTimer = setTimeout(() => go(1), 250);
+      }
+    }, label));
+  const hidden = isIntro ? { class: "center ghost", "aria-hidden": "true" } : { class: "center" };
+  const progress = progressBar(Math.max(n, 0), domain.followup.length);
+  if (isIntro) { progress.classList.add("ghost"); progress.setAttribute("aria-hidden", "true"); }
+  const nextBtn = el("button", { class: "primary" + (isIntro ? "" : " ghost"), onclick: () => go(1) }, ["Next ", icon("arrow-right")]);
+  if (!isIntro) { nextBtn.setAttribute("aria-hidden", "true"); nextBtn.tabIndex = -1; }
+  return el("section", { class: "card" }, [
+    progress,
+    el("div", { class: "followup-layout" }, [
+      context(domain),
+      el("div", hidden, [
+        el("div", { class: "q-block" }, [el("p", { class: "question", text: q.text })]),
+        el("div", { class: "options" }, options)
+      ])
+    ]),
+    el("div", { class: "row-between" }, [backButton(), nextBtn])
   ]);
 }
 
@@ -141,8 +179,10 @@ const screens = {
     return el("section", { class: "card" }, [
       progressBar(n, screenCount),
       el("div", { class: "center" }, [
-        el("p", { class: "prompt", text: domain.screenerPrompt }),
-        el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })]),
+        el("div", { class: "q-block" }, [
+          el("p", { class: "prompt", text: domain.screenerPrompt }),
+          el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })])
+        ]),
         el("div", { class: "options" }, options)
       ]),
       backButton()
@@ -195,31 +235,16 @@ const screens = {
     ]);
   },
 
+  // Lead-in before a part's follow-up questions: the lead sentence and the
+  // list of endorsed behaviors, then Next. It is built exactly like a question
+  // screen with the question area kept invisible, so when the questions start
+  // the sentence and list stay in the same place and the question appears below.
+  followupIntro({ domain }) {
+    return followupScreen(domain, domain.followup[0], -1);
+  },
+
   question({ domain, q, n }) {
-    const prev = data.followup[q.id];
-    const options = q.options.map((label, idx) =>
-      el("button", {
-        class: "option" + (prev && prev.response === idx ? " selected" : ""),
-        onclick: e => {
-          data.followup[q.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
-          app.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
-          e.currentTarget.classList.add("selected");
-          advanceTimer = setTimeout(() => go(1), 250);
-        }
-      }, label));
-    return el("section", { class: "card" }, [
-      progressBar(n, domain.followup.length),
-      // Reminder panel of endorsed items above the question. On the first
-      // follow-up its heading is the part's instruction ("Please think about...").
-      el("div", { class: "followup-layout" }, [
-        reminder(domain, n === 0 ? domain.followupIntro : domain.reminderTitle),
-        el("div", { class: "center" }, [
-          el("p", { class: "question", text: q.text }),
-          el("div", { class: "options" }, options)
-        ])
-      ]),
-      backButton()
-    ]);
+    return followupScreen(domain, q, n);
   },
 
   end() {
@@ -262,8 +287,41 @@ function fitToCard() {
     card.style.setProperty("--s", s);
   }
 }
-window.addEventListener("resize", fitToCard);
-app.addEventListener("toggle", fitToCard, true);
+// Keep the layout still between screens: give the question the height of the
+// longest question of the same kind (all items, or all follow-ups) at the
+// current width, so the prompt and answer buttons never move when a question
+// wraps onto more lines. Stored in em so it scales with fitToCard.
+// The question block (prompt + question) is bottom-aligned inside the reserved
+// space, so the question always sits right above its answers and any spare
+// space goes above it.
+function reserveQuestionHeight() {
+  const step = steps[current];
+  if (step.type !== "item" && step.type !== "question" && step.type !== "followupIntro") return;
+  const block = app.querySelector(".q-block");
+  const prompt = block.querySelector(".prompt");
+  const question = block.querySelector(".question");
+  app.querySelector(".card").style.setProperty("--s", 1);
+  block.style.minHeight = "";
+  const originals = [prompt && prompt.textContent, question.textContent];
+  const variants = step.type === "item"
+    ? DOMAINS.flatMap(d => d.items.map(it => [d.screenerPrompt, it.text]))
+    : DOMAINS.flatMap(d => d.followup.map(f => [null, f.text]));
+  let max = 0;
+  variants.forEach(([p, q]) => {
+    if (prompt) prompt.textContent = p;
+    question.textContent = q;
+    max = Math.max(max, block.getBoundingClientRect().height);
+  });
+  if (prompt) prompt.textContent = originals[0];
+  question.textContent = originals[1];
+  block.style.minHeight = `${max / parseFloat(getComputedStyle(block).fontSize)}em`;
+}
+
+function layout() {
+  reserveQuestionHeight();
+  fitToCard();
+}
+window.addEventListener("resize", layout);
 
 function render() {
   const step = steps[current];
@@ -271,8 +329,8 @@ function render() {
   if (step.domain) card.prepend(partHeader(step.domain));
   app.replaceChildren(card);
   shownAt = performance.now();
-  fitToCard();
-  const focusTarget = app.querySelector("h1, .prompt, .question, .eyebrow");
+  layout();
+  const focusTarget = app.querySelector(step.type === "question" ? ".q-block .question" : "h1, .context-lead, .prompt, .question");
   if (focusTarget) { focusTarget.setAttribute("tabindex", "-1"); focusTarget.focus({ preventScroll: true }); }
 }
 
