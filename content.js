@@ -14,7 +14,8 @@ const WELCOME = {
 };
 
 const FREQUENCY_SCALE = ["Never", "Rarely", "Sometimes", "Often"];
-const SCALE_INTENSITY = ["Not at all", "A little", "A lot", "Extremely"];
+// Answer scale for all follow-up questions (5 points).
+const SCALE_INTENSITY = ["Not at all", "A little", "Somewhat", "A lot", "Extremely"];
 
 const DOMAINS = [
   {
@@ -69,20 +70,20 @@ const DOMAINS = [
         text: "Do you repeatedly go over past events in your head to make sure you didn't say or do anything wrong?" }
     ],
     // Shown above the list of endorsed items, on the lead-in and every follow-up question.
-    followupLead: "Please think about the checking habits that you do these days:",
+    followupLead: "Here are the checking habits you noted as having sometimes or often:",
     // Frequency follow-up dropped: the item ratings already measure frequency.
     followup: [
       { id: "chk_distress",     label: "Distress",
-        text: "How upset or distressed do you feel about these checking behaviors?",
+        text: "Thinking about the checking habits, how upset or distressed do you feel about having them?",
         options: SCALE_INTENSITY },
       { id: "chk_interference", label: "Interference",
-        text: "How much do these checking behaviors interfere with your everyday life (for example, your work, relationships, or leisure time)?",
+        text: "Thinking about the checking habits, how much do they interfere with your everyday life (for example, your work, relationships, or leisure time)?",
         options: SCALE_INTENSITY },
       { id: "chk_resistance",   label: "Control/Resistance",
-        text: "To what extent are you able to resist these checking behaviors?",
+        text: "Thinking about the checking habits, to what extent are you able to resist them?",
         options: SCALE_INTENSITY },
       { id: "chk_change",       label: "Need for change",
-        text: "If you could magically stop these checking behaviors overnight, how much better would your life be?",
+        text: "Thinking about the checking habits, if you could magically stop them overnight, how much better would your life be?",
         options: SCALE_INTENSITY }
     ]
   },

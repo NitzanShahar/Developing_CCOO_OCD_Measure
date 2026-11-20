@@ -37,7 +37,18 @@ let advanceTimer = null;
 // the scale for a short inter-trial interval (ITI) while everything else stays
 // on screen, then show the next screen.
 const FEEDBACK_MS = 250;
-const ITI_MS = 500;
+const ITI_MS = 1000;
+// Set by go() when arriving at the first question of a set (first item of a
+// part, or first follow-up), so that question also appears after the pause.
+let pauseBeforeQuestion = false;
+function revealAfterPause() {
+  const parts = app.querySelectorAll(".center:not(.ghost) .q-block, .center:not(.ghost) .options");
+  parts.forEach(node => node.classList.add("iti"));
+  advanceTimer = setTimeout(() => {
+    parts.forEach(node => node.classList.remove("iti"));
+    shownAt = performance.now(); // response times count from when the question appears
+  }, ITI_MS);
+}
 function advanceWithPause() {
   clearTimeout(advanceTimer);
   advanceTimer = setTimeout(() => {
@@ -79,6 +90,7 @@ function go(direction) {
     introShown[step.domain.id] = direction > 0 ? 1 : introSentenceCount(step.domain);
   }
   introJustRevealed = false;
+  pauseBeforeQuestion = direction > 0 && (step.type === "item" || step.type === "question") && step.n === 0;
   render();
 }
 
@@ -177,7 +189,7 @@ function followupScreen(domain, q, n) {
       context(domain),
       el("div", hidden, [
         el("div", { class: "q-block" }, [el("p", { class: "question", text: q.text })]),
-        el("div", { class: "options" }, options)
+        el("div", { class: "options" + (options.length > 4 ? " options-many" : ""), style: `grid-template-columns: repeat(${options.length}, minmax(0, 1fr))` }, options)
       ])
     ]),
     el("div", { class: "row-between" }, [backButton(), nextBtn])
@@ -394,6 +406,7 @@ function render() {
   app.replaceChildren(card);
   shownAt = performance.now();
   layout();
+  if (pauseBeforeQuestion) { pauseBeforeQuestion = false; revealAfterPause(); }
   const focusTarget = app.querySelector(step.type === "question" ? ".q-block .question" : "h1, .context-lead, .prompt, .question");
   if (focusTarget) { focusTarget.setAttribute("tabindex", "-1"); focusTarget.focus({ preventScroll: true }); }
 }

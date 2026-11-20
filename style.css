@@ -176,6 +176,9 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
      so every label fits at full size. Yes/No stays one row of two. */
   .options { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .5em; }
   .option { font-size: 1em; padding: .6em .3em; min-height: 2.8em; }
+  /* Five-point scales: rows of three and two, read left to right. */
+  .options.options-many { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: .4em; }
+  .options-many .option { min-height: 2.6em; padding: .4em .2em; font-size: .95em; }
   .followup-layout { gap: 1em; }
   .reminder { padding: .6em .75em; }
   .reminder-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35em .8em; }
