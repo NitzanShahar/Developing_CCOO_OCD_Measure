@@ -41,11 +41,28 @@ function isSkipped(step) {
   return (step.type === "followupIntro" || step.type === "question") && endorsed(step.domain).length === 0;
 }
 
+// How many intro paragraphs of each part are currently revealed.
+const introShown = {};
+let introJustRevealed = false;
+
 function go(direction) {
   clearTimeout(advanceTimer);
   let next = current + direction;
   while (next > 0 && next < steps.length - 1 && isSkipped(steps[next])) next += direction;
   current = Math.max(0, Math.min(steps.length - 1, next));
+  const step = steps[current];
+  if (step.type === "intro") {
+    // Arriving from before: start with the first paragraph. Coming back: show all.
+    introShown[step.domain.id] = direction > 0 ? 1 : step.domain.intro.length;
+  }
+  introJustRevealed = false;
+  render();
+}
+
+// Reveal (or hide) one intro paragraph without leaving the screen.
+function stepIntro(domain, delta) {
+  introShown[domain.id] += delta;
+  introJustRevealed = delta > 0;
   render();
 }
 
@@ -154,12 +171,16 @@ const screens = {
   },
 
   intro({ domain }) {
+    const shown = introShown[domain.id] || 1;
+    const last = shown >= domain.intro.length;
+    const paragraphs = domain.intro.slice(0, shown).map((t, i) =>
+      el("p", { class: i === shown - 1 && introJustRevealed ? "reveal" : "", text: t }));
     return el("section", { class: "card" }, [
       el("h1", { text: domain.title }),
-      ...domain.intro.map(t => el("p", { text: t })),
+      ...paragraphs,
       el("div", { class: "row-between" }, [
-        backButton(),
-        el("button", { class: "primary", onclick: () => go(1) }, ["Continue ", icon("arrow-right")])
+        el("button", { class: "link-btn", onclick: () => (shown > 1 ? stepIntro(domain, -1) : go(-1)) }, [icon("arrow-left"), " Back"]),
+        el("button", { class: "primary", onclick: () => (last ? go(1) : stepIntro(domain, 1)) }, ["Continue ", icon("arrow-right")])
       ])
     ]);
   },

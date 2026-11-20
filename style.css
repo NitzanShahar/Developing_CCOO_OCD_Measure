@@ -127,6 +127,9 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .context { display: flex; flex-direction: column; gap: .6em; }
 .context-lead { font-size: 1em; font-weight: 500; line-height: 1.45; }
 .ghost { visibility: hidden; }
+.reveal { animation: reveal .4s ease both; }
+@keyframes reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
 .reminder-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45em 1.4em; }
 .reminder-list li { display: flex; gap: .5em; align-items: center; font-size: .88em; line-height: 1.3; color: var(--text); }
 .reminder-list .ti { font-size: 1.25em; flex-shrink: 0; color: var(--accent); }

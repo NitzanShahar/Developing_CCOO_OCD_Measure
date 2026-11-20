@@ -20,9 +20,12 @@ const DOMAINS = [
   {
     id: "checking",
     title: "Checking",
+    // Each entry is revealed on its own: the first appears alone, and each
+    // Continue adds the next one below it. The last Continue starts the items.
     intro: [
-      "Checking behavior means making sure more than once that something is safe, correct, or in order. At times, people may check the same thing again or return to it to make sure everything is as it should be.",
-      "Common examples are checking that doors or windows are locked, that stoves or heaters are off, or that no accident has occurred."
+      "Checking behavior means making sure more than once that something is safe, correct, or in order.",
+      "At times, people may check the same thing again or return to it to make sure everything is as it should be.",
+      "In the following questions, please mark the types of checking behavior that you tend to engage in these days."
     ],
     screenerPrompt: "How often do you repeat or double-check this?",
     screenerOptions: FREQUENCY_SCALE,
