@@ -222,10 +222,11 @@ const screens = {
       }, label));
     return el("section", { class: "card" }, [
       progressBar(n, screenCount),
+      // The part's prompt line sits in a fixed spot under the progress bar,
+      // so it never moves when questions differ in length.
+      domain.screenerPrompt ? el("p", { class: "prompt prompt-fixed", text: domain.screenerPrompt }) : null,
       el("div", { class: "center" }, [
         el("div", { class: "q-block" }, [
-          // Parts whose items are full questions (e.g. Checking) have no prompt line.
-          domain.screenerPrompt ? el("p", { class: "prompt", text: domain.screenerPrompt }) : null,
           el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })])
         ]),
         // One equal column per answer option (2 for No/Yes, 4 for a frequency scale).

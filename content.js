@@ -29,11 +29,11 @@ const DOMAINS = [
         "At times, people may check the same thing again or return to it to make sure everything is as it should be."
       ],
       [
-        "In the following questions, please mark the types of checking behavior that you tend to engage in these days."
+        "In the following questions, please mark the types of checking behavior that you currently engage in."
       ]
     ],
-    // No prompt line: each item is a full yes/no question on its own.
-    screenerPrompt: null,
+    // Fixed line shown above every item question.
+    screenerPrompt: "Thinking about your life currently:",
     screenerOptions: ["No", "Yes"],
     // Items answered at or above this option index count as "endorsed" and
     // trigger the follow-up questions (1 = "Yes").
@@ -44,27 +44,29 @@ const DOMAINS = [
     // the reminder on the follow-up questions.
     items: [
       { id: "chk_doors",        icon: "lock",           short: "Doors or windows",
-        text: "Do you repeat or double-check doors or windows to make sure they are locked?" },
+        text: "Do you repeatedly check doors or windows to make sure they are locked?" },
       { id: "chk_appliances",   icon: "flame",          short: "Stove, oven, or appliances",
-        text: "Do you repeat or double-check the stove, oven, or appliances to make sure they are off?" },
+        text: "Do you repeatedly check the stove, oven, or other appliances to make sure they are off?" },
       { id: "chk_belongings",   icon: "wallet",         short: "Wallet or belongings",
-        text: "Do you repeat or double-check your wallet or important belongings to make sure nothing is lost?" },
+        text: "Do you repeatedly check your wallet or other important belongings to make sure nothing is lost?" },
       { id: "chk_messages",     icon: "mail",           short: "Messages or emails",
-        text: "Do you repeat or double-check your text messages or emails to make sure there are no mistakes and nothing was sent by mistake?" },
+        text: "Do you repeatedly check your text messages or emails to make sure there are no mistakes and nothing was sent accidentally?" },
       { id: "chk_appearance",   icon: "user",           short: "Appearance or body parts",
-        text: "Do you repeat or double-check your physical appearance or specific body parts?" },
-      { id: "chk_illness",      icon: "stethoscope",    short: "Signs of illness",
-        text: "Do you repeat or double-check your body to make sure you have no signs of illness?" },
+        text: "Do you repeatedly check your physical appearance or specific body parts to make sure there are no flaws or imperfections?" },
+      { id: "chk_illness",      icon: "stethoscope",    short: "Health or signs of illness",
+        text: "Do you repeatedly check your body or health to make sure there are no signs of illness, injury, or other medical problems?" },
       { id: "chk_mistakes",     icon: "checklist",      short: "Work or routine tasks",
-        text: "Do you repeat or double-check your work or routine tasks to make sure you didn't make a mistake?" },
+        text: "Do you repeatedly check your work or routine tasks to make sure you haven't made a mistake?" },
+      { id: "chk_hazards",      icon: "alert-triangle", short: "Dangerous things left behind",
+        text: "Do you repeatedly check to make sure you haven't left behind anything dangerous, such as something sharp, something someone could trip over, or something that could fall on someone?" },
       { id: "chk_harm",         icon: "users",          short: "Not hurting someone",
-        text: "Do you repeat or double-check to make sure you did not accidentally hurt someone?" },
-      { id: "chk_catastrophe",  icon: "alert-triangle", short: "Nothing terrible happened",
-        text: "Do you repeat or double-check to make sure nothing terrible happened?" },
+        text: "Do you repeatedly check to make sure you haven't accidentally hurt someone, such as hitting someone while driving or bumping into someone?" },
+      { id: "chk_loved_ones",   icon: "heart",          short: "Loved ones are safe",
+        text: "Do you repeatedly check to make sure your loved ones are safe and that nothing terrible has happened to them?" },
       { id: "chk_understood",   icon: "message-2",      short: "Others understood you",
-        text: "Do you repeat or double-check that others understood you well?" },
+        text: "Do you repeatedly check to make sure others understood what you meant?" },
       { id: "chk_past_events",  icon: "history",        short: "Going over past events",
-        text: "Do you go over past events in your head again and again to make sure you did not say anything you didn't mean to?" }
+        text: "Do you repeatedly go over past events in your head to make sure you didn't say or do anything wrong?" }
     ],
     // Shown above the list of endorsed items, on the lead-in and every follow-up question.
     followupLead: "Please think about the checking habits that you do these days:",
