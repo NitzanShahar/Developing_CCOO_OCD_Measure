@@ -41,7 +41,16 @@ function isSkipped(step) {
   return (step.type === "followupIntro" || step.type === "question") && endorsed(step.domain).length === 0;
 }
 
-// How many intro paragraphs of each part are currently revealed.
+// A part's intro as paragraphs of sentences. An entry may be a plain string
+// (one paragraph shown at once) or a list of sentences revealed one by one.
+function introParagraphs(domain) {
+  return domain.intro.map(p => (Array.isArray(p) ? p : [p]));
+}
+function introSentenceCount(domain) {
+  return introParagraphs(domain).reduce((n, p) => n + p.length, 0);
+}
+
+// How many intro sentences of each part are currently revealed.
 const introShown = {};
 let introJustRevealed = false;
 
@@ -52,14 +61,14 @@ function go(direction) {
   current = Math.max(0, Math.min(steps.length - 1, next));
   const step = steps[current];
   if (step.type === "intro") {
-    // Arriving from before: start with the first paragraph. Coming back: show all.
-    introShown[step.domain.id] = direction > 0 ? 1 : step.domain.intro.length;
+    // Arriving from before: start with the first sentence. Coming back: show all.
+    introShown[step.domain.id] = direction > 0 ? 1 : introSentenceCount(step.domain);
   }
   introJustRevealed = false;
   render();
 }
 
-// Reveal (or hide) one intro paragraph without leaving the screen.
+// Reveal (or hide) one intro sentence without leaving the screen.
 function stepIntro(domain, delta) {
   introShown[domain.id] += delta;
   introJustRevealed = delta > 0;
@@ -172,9 +181,23 @@ const screens = {
 
   intro({ domain }) {
     const shown = introShown[domain.id] || 1;
-    const last = shown >= domain.intro.length;
-    const paragraphs = domain.intro.slice(0, shown).map((t, i) =>
-      el("p", { class: i === shown - 1 && introJustRevealed ? "reveal" : "", text: t }));
+    const last = shown >= introSentenceCount(domain);
+    // Build paragraphs from the first `shown` sentences; a newly revealed
+    // sentence fades in at the end of its paragraph.
+    const paragraphs = [];
+    let count = 0;
+    for (const sentences of introParagraphs(domain)) {
+      if (count >= shown) break;
+      const spans = [];
+      for (const s of sentences) {
+        if (count >= shown) break;
+        count++;
+        const isNew = count === shown && introJustRevealed;
+        if (spans.length) spans.push(" ");
+        spans.push(el("span", { class: isNew ? "reveal-inline" : "", text: s }));
+      }
+      paragraphs.push(el("p", {}, spans));
+    }
     return el("section", { class: "card" }, [
       el("h1", { text: domain.title }),
       ...paragraphs,

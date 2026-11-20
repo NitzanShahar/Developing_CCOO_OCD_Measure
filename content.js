@@ -20,12 +20,17 @@ const DOMAINS = [
   {
     id: "checking",
     title: "Checking",
-    // Each entry is revealed on its own: the first appears alone, and each
-    // Continue adds the next one below it. The last Continue starts the items.
+    // Paragraphs, each a list of sentences. Sentences are revealed one at a
+    // time: each Continue adds the next sentence (at the end of the same
+    // paragraph, or as a new paragraph). The last Continue starts the items.
     intro: [
-      "Checking behavior means making sure more than once that something is safe, correct, or in order.",
-      "At times, people may check the same thing again or return to it to make sure everything is as it should be.",
-      "In the following questions, please mark the types of checking behavior that you tend to engage in these days."
+      [
+        "Checking behavior means making sure more than once that something is safe, correct, or in order.",
+        "At times, people may check the same thing again or return to it to make sure everything is as it should be."
+      ],
+      [
+        "In the following questions, please mark the types of checking behavior that you tend to engage in these days."
+      ]
     ],
     // No prompt line: each item is a full yes/no question on its own.
     screenerPrompt: null,

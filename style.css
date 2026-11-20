@@ -146,7 +146,9 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .ghost { visibility: hidden; }
 .reveal { animation: reveal .4s ease both; }
 @keyframes reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
+.reveal-inline { animation: reveal-inline .5s ease both; }
+@keyframes reveal-inline { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .reveal, .reveal-inline { animation: none; } }
 
 /* Multi-item grid mode (itemsPerScreen > 1) */
 .rate-row { border-top: 1px solid var(--border-soft); padding-top: 1em; display: flex; flex-direction: column; gap: .6em; }
