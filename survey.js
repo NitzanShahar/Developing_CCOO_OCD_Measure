@@ -33,6 +33,20 @@ let current = 0;
 let shownAt = 0;
 let advanceTimer = null;
 
+// After an answer: show the selection briefly, then hide the question and
+// the scale for a short inter-trial interval (ITI) while everything else stays
+// on screen, then show the next screen.
+const FEEDBACK_MS = 250;
+const ITI_MS = 500;
+function advanceWithPause() {
+  clearTimeout(advanceTimer);
+  advanceTimer = setTimeout(() => {
+    app.querySelectorAll(".center:not(.ghost) .q-block, .center:not(.ghost) .options")
+      .forEach(node => node.classList.add("iti"));
+    advanceTimer = setTimeout(() => go(1), ITI_MS);
+  }, FEEDBACK_MS);
+}
+
 function endorsed(domain) {
   return domain.items.filter(it => data.screener[it.id] && data.screener[it.id].response >= domain.endorseThreshold);
 }
@@ -149,7 +163,7 @@ function followupScreen(domain, q, n) {
         data.followup[q.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
         app.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
         e.currentTarget.classList.add("selected");
-        advanceTimer = setTimeout(() => go(1), 250);
+        advanceWithPause();
       }
     }, label));
   const hidden = isIntro ? { class: "center ghost", "aria-hidden": "true" } : { class: "center" };
@@ -217,16 +231,17 @@ const screens = {
           data.screener[item.id] = { response: idx, label, rt_ms: Math.round(performance.now() - shownAt) };
           app.querySelectorAll(".option").forEach(b => b.classList.remove("selected"));
           e.currentTarget.classList.add("selected");
-          advanceTimer = setTimeout(() => go(1), 250);
+          advanceWithPause();
         }
       }, label));
+    // Prompt line + question + scale form one block centered in the white
+    // space. The question area is reserved for the longest item and the
+    // question is centered inside it, so the prompt and the scale stay put.
     return el("section", { class: "card" }, [
       progressBar(n, screenCount),
-      // The part's prompt line sits in a fixed spot under the progress bar,
-      // so it never moves when questions differ in length.
-      domain.screenerPrompt ? el("p", { class: "prompt prompt-fixed", text: domain.screenerPrompt }) : null,
       el("div", { class: "center" }, [
-        el("div", { class: "q-block" }, [
+        domain.screenerPrompt ? el("p", { class: "prompt prompt-fixed", text: domain.screenerPrompt }) : null,
+        el("div", { class: "q-block q-centered" }, [
           el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })])
         ]),
         // One equal column per answer option (2 for No/Yes, 4 for a frequency scale).

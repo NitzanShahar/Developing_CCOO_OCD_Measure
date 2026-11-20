@@ -81,7 +81,7 @@ p { margin: 0; }
 .eyebrow { font-size: .85em; font-weight: 600; color: var(--accent); }
 .meta { font-size: .85em; color: var(--text-2); }
 .prompt { font-size: 1em; color: var(--text-2); }
-.prompt-fixed { font-size: 1.05em; font-weight: 600; color: var(--text-2); margin-top: .6em; flex-shrink: 0; }
+.prompt-fixed { font-size: 1.05em; font-weight: 600; color: var(--text-2); flex-shrink: 0; }
 .strong { font-weight: 600; }
 .question { font-size: 1.3em; font-weight: 650; line-height: 1.35; }
 
@@ -124,6 +124,11 @@ button .ti { font-size: 1.1em; vertical-align: -.18em; }
 .center { margin: auto 0; display: flex; flex-direction: column; gap: 1.1em; }
 .center + .link-btn { margin-top: 0; }
 .q-block { display: flex; flex-direction: column; justify-content: flex-end; gap: 1em; }
+/* Item screens: the question is centered in its reserved space, between the
+   fixed prompt line above and the fixed scale below. */
+.q-block.q-centered { justify-content: center; }
+/* Inter-trial interval: question and scale hidden briefly between questions. */
+.iti { visibility: hidden; }
 .item-head { display: flex; gap: .8em; align-items: flex-start; padding: .2em 0; }
 .item-icon { font-size: 1.6em; color: var(--accent); flex-shrink: 0; line-height: 1; margin-top: .05em; }
 

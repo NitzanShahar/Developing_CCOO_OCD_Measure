@@ -34,10 +34,10 @@ const DOMAINS = [
     ],
     // Fixed line shown above every item question.
     screenerPrompt: "Thinking about your life currently:",
-    screenerOptions: ["No", "Yes"],
-    // Items answered at or above this option index count as "endorsed" and
-    // trigger the follow-up questions (1 = "Yes").
-    endorseThreshold: 1,
+    screenerOptions: FREQUENCY_SCALE,
+    // Items rated at or above this option index count as "endorsed" and
+    // trigger the follow-up questions (2 = "Sometimes").
+    endorseThreshold: 2,
     // 1 = one item per screen with auto-advance; >1 = grid of items with a Next button.
     itemsPerScreen: 1,
     // text = full item shown on its own screen; short = few-word label used in
