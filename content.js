@@ -27,41 +27,42 @@ const DOMAINS = [
       "At times, people may check the same thing again or return to it to make sure everything is as it should be.",
       "In the following questions, please mark the types of checking behavior that you tend to engage in these days."
     ],
-    screenerPrompt: "How often do you repeat or double-check this?",
-    screenerOptions: FREQUENCY_SCALE,
-    // Items rated at or above this option index count as "endorsed" and
-    // trigger the follow-up questions (2 = "Sometimes").
-    endorseThreshold: 2,
+    // No prompt line: each item is a full yes/no question on its own.
+    screenerPrompt: null,
+    screenerOptions: ["No", "Yes"],
+    // Items answered at or above this option index count as "endorsed" and
+    // trigger the follow-up questions (1 = "Yes").
+    endorseThreshold: 1,
     // 1 = one item per screen with auto-advance; >1 = grid of items with a Next button.
     itemsPerScreen: 1,
     // text = full item shown on its own screen; short = few-word label used in
     // the reminder on the follow-up questions.
     items: [
       { id: "chk_doors",        icon: "lock",           short: "Doors or windows",
-        text: "Checking doors or windows to make sure they are locked" },
+        text: "Do you repeat or double-check doors or windows to make sure they are locked?" },
       { id: "chk_appliances",   icon: "flame",          short: "Stove, oven, or appliances",
-        text: "Checking the stove, oven, or appliances to make sure they are off" },
+        text: "Do you repeat or double-check the stove, oven, or appliances to make sure they are off?" },
       { id: "chk_belongings",   icon: "wallet",         short: "Wallet or belongings",
-        text: "Checking your wallet or important belongings to make sure they are not lost" },
+        text: "Do you repeat or double-check your wallet or important belongings to make sure nothing is lost?" },
       { id: "chk_messages",     icon: "mail",           short: "Messages or emails",
-        text: "Checking your text messages or emails to make sure there are no mistakes" },
+        text: "Do you repeat or double-check your text messages or emails to make sure there are no mistakes and nothing was sent by mistake?" },
       { id: "chk_appearance",   icon: "user",           short: "Appearance or body parts",
-        text: "Checking your physical appearance or specific body parts" },
+        text: "Do you repeat or double-check your physical appearance or specific body parts?" },
       { id: "chk_illness",      icon: "stethoscope",    short: "Signs of illness",
-        text: "Checking your body to make sure you have no signs of illness" },
+        text: "Do you repeat or double-check your body to make sure you have no signs of illness?" },
       { id: "chk_mistakes",     icon: "checklist",      short: "Work or routine tasks",
-        text: "Checking your work or routine tasks to make sure you didn't make a mistake" },
+        text: "Do you repeat or double-check your work or routine tasks to make sure you didn't make a mistake?" },
       { id: "chk_harm",         icon: "users",          short: "Not hurting someone",
-        text: "Checking to make sure you did not accidentally hurt someone" },
+        text: "Do you repeat or double-check to make sure you did not accidentally hurt someone?" },
       { id: "chk_catastrophe",  icon: "alert-triangle", short: "Nothing terrible happened",
-        text: "Checking to make sure nothing terrible happened" },
+        text: "Do you repeat or double-check to make sure nothing terrible happened?" },
       { id: "chk_understood",   icon: "message-2",      short: "Others understood you",
-        text: "Checking that others understood you well" },
+        text: "Do you repeat or double-check that others understood you well?" },
       { id: "chk_past_events",  icon: "history",        short: "Going over past events",
-        text: "Going over past events in your head again and again to make sure you did not say anything you didn't mean to" }
+        text: "Do you go over past events in your head again and again to make sure you did not say anything you didn't mean to?" }
     ],
     // Shown above the list of endorsed items, on the lead-in and every follow-up question.
-    followupLead: "Please think about the checking habits at present that you sometimes or often do:",
+    followupLead: "Please think about the checking habits that you do these days:",
     // Frequency follow-up dropped: the item ratings already measure frequency.
     followup: [
       { id: "chk_distress",     label: "Distress",

@@ -201,10 +201,12 @@ const screens = {
       progressBar(n, screenCount),
       el("div", { class: "center" }, [
         el("div", { class: "q-block" }, [
-          el("p", { class: "prompt", text: domain.screenerPrompt }),
+          // Parts whose items are full questions (e.g. Checking) have no prompt line.
+          domain.screenerPrompt ? el("p", { class: "prompt", text: domain.screenerPrompt }) : null,
           el("div", { class: "item-head" }, [icon(item.icon, "item-icon"), el("p", { class: "question", text: item.text })])
         ]),
-        el("div", { class: "options" }, options)
+        // One equal column per answer option (2 for No/Yes, 4 for a frequency scale).
+        el("div", { class: "options", style: `grid-template-columns: repeat(${options.length}, minmax(0, 1fr))` }, options)
       ]),
       backButton()
     ]);
@@ -324,8 +326,10 @@ function reserveQuestionHeight() {
   app.querySelector(".card").style.setProperty("--s", 1);
   block.style.minHeight = "";
   const originals = [prompt && prompt.textContent, question.textContent];
+  // Items: reserve for the longest item within this part (parts differ in
+  // whether they have a prompt line). Follow-ups: across all parts.
   const variants = step.type === "item"
-    ? DOMAINS.flatMap(d => d.items.map(it => [d.screenerPrompt, it.text]))
+    ? step.domain.items.map(it => [step.domain.screenerPrompt, it.text])
     : DOMAINS.flatMap(d => d.followup.map(f => [null, f.text]));
   let max = 0;
   variants.forEach(([p, q]) => {
