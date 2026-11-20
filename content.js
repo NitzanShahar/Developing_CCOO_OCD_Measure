@@ -85,8 +85,8 @@ const DOMAINS = [
         options: SCALE_CHECKING_FOLLOWUP },
       // Higher = better able to resist (reverse-score for severity).
       { id: "chk_resistance",   label: "Control/Resistance",
-        text: "When you try to stop yourself from checking, how well are you able to resist?",
-        options: SCALE_CHECKING_FOLLOWUP },
+        text: "If you tried to stop yourself from checking, how well do you think you could resist?",
+        options: ["Not at all", "Slightly", "Moderately", "Very well", "Completely"] },
       { id: "chk_want_stop",    label: "Desire to stop",
         text: "How much do you want your checking habits to stop?",
         options: SCALE_CHECKING_FOLLOWUP },
