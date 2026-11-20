@@ -14,8 +14,10 @@ const WELCOME = {
 };
 
 const FREQUENCY_SCALE = ["Never", "Rarely", "Sometimes", "Often"];
-// Answer scale for all follow-up questions (5 points).
+// Answer scale for the follow-up questions of Cleaning, Obsessing, Ordering (5 points).
 const SCALE_INTENSITY = ["Not at all", "A little", "Somewhat", "A lot", "Extremely"];
+// Answer scale for the Checking follow-up questions (5 points).
+const SCALE_CHECKING_FOLLOWUP = ["Not at all", "A little bit", "Moderately", "Quite a bit", "Extremely"];
 
 const DOMAINS = [
   {
@@ -76,17 +78,21 @@ const DOMAINS = [
     // Frequency follow-up dropped: the item ratings already measure frequency.
     followup: [
       { id: "chk_distress",     label: "Distress",
-        text: "Thinking about the checking habits, how upset or distressed do you feel about having them?",
-        options: SCALE_INTENSITY },
+        text: "How upset or distressed do you feel about your checking habits?",
+        options: SCALE_CHECKING_FOLLOWUP },
       { id: "chk_interference", label: "Interference",
-        text: "Thinking about the checking habits, how much do they interfere with your everyday life (for example, your work, relationships, or leisure time)?",
-        options: SCALE_INTENSITY },
+        text: "How much do your checking habits get in the way of your everyday life (for example, your work, relationships, or free time)?",
+        options: SCALE_CHECKING_FOLLOWUP },
+      // Higher = better able to resist (reverse-score for severity).
       { id: "chk_resistance",   label: "Control/Resistance",
-        text: "Thinking about the checking habits, to what extent are you able to resist them?",
-        options: SCALE_INTENSITY },
+        text: "When you try to stop yourself from checking, how well are you able to resist?",
+        options: SCALE_CHECKING_FOLLOWUP },
+      { id: "chk_want_stop",    label: "Desire to stop",
+        text: "How much do you want your checking habits to stop?",
+        options: SCALE_CHECKING_FOLLOWUP },
       { id: "chk_change",       label: "Need for change",
-        text: "Thinking about the checking habits, if you could magically stop them overnight, how much better would your life be?",
-        options: SCALE_INTENSITY }
+        text: "How much better do you think your life would be if you stopped checking completely?",
+        options: SCALE_CHECKING_FOLLOWUP }
     ]
   },
   {
